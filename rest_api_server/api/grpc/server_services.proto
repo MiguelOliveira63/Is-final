@@ -10,7 +10,17 @@ message SendFileRequestBody {
 message SendFileResponseBody {
  bool success = 1;
 }
+message SendFileChunksRequest {
+ bytes data = 1; // The chunk of the file
+ string file_name = 2; // File name (optional, sent in the first chunk or metadata)
+}
+message SendFileChunksResponse {
+ bool success = 1; // Indicates if the upload was successful
+ string message = 2; // Additional status message
+}
 // Service definition
 service SendFileService {
  rpc SendFile (SendFileRequestBody) returns (SendFileResponseBody);
+ rpc SendFileChunks (stream SendFileChunksRequest) returns
+(SendFileChunksResponse);
 }

@@ -1,3 +1,4 @@
 grpcio
 grpcio-tools
 pg8000
+pika

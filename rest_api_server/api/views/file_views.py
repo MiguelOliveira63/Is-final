@@ -8,6 +8,7 @@ import api.grpc.server_services_pb2_grpc as server_services_pb2_grpc
 import os
 from rest_api_server.settings import GRPC_PORT, GRPC_HOST
 
+
 class FileUploadView(APIView):
     def post(self, request):
         # Valida os dados do request usando o serializer
@@ -56,3 +57,57 @@ class FileUploadView(APIView):
         
         # Se o serializer não for válido, retorna os erros do serializer
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class FileUploadChunksView(APIView):
+    def post(self, request):
+        serializer = FileUploadSerializer(data=request.data)
+
+        if serializer.is_valid():
+            file = serializer.validated_data['file']
+
+            if not file:
+                return Response(
+                    {"error": "No file uploaded"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Conectar ao serviço gRPC
+            channel = grpc.insecure_channel(f'{GRPC_HOST}:{GRPC_PORT}')
+            stub = server_services_pb2_grpc.SendFileServiceStub(channel)
+
+            def generate_file_chunks(file, file_name, chunk_size=(64 * 1024)):
+                """
+                Gera os chunks do arquivo para envio.
+                """
+                try:
+                    while chunk := file.read(chunk_size):
+                        yield server_services_pb2.SendFileChunksRequest(
+                            data=chunk,
+                            file_name=file_name
+                        )
+                except Exception as e:
+                    print(f"Error reading file: {e}")
+                    raise  # Propagar a exceção
+
+            # Enviar os chunks do arquivo para o serviço gRPC
+            try:
+                response = stub.SendFileChunks(generate_file_chunks(file, file.name, (64 * 1024)))
+                if response.success:
+                    return Response(
+                        {"file_name": file.name},
+                        status=status.HTTP_201_CREATED
+                    )
+                return Response(
+                    {"error": f"gRPC response error: {response.message}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except grpc.RpcError as e:
+                return Response(
+                    {"error": f"gRPC call failed: {e.details()}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )

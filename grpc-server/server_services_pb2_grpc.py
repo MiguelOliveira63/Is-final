@@ -40,6 +40,11 @@ class SendFileServiceStub(object):
                 request_serializer=server__services__pb2.SendFileRequestBody.SerializeToString,
                 response_deserializer=server__services__pb2.SendFileResponseBody.FromString,
                 _registered_method=True)
+        self.SendFileChunks = channel.stream_unary(
+                '/server_services.SendFileService/SendFileChunks',
+                request_serializer=server__services__pb2.SendFileChunksRequest.SerializeToString,
+                response_deserializer=server__services__pb2.SendFileChunksResponse.FromString,
+                _registered_method=True)
 
 
 class SendFileServiceServicer(object):
@@ -52,6 +57,12 @@ class SendFileServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SendFileChunks(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SendFileServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -59,6 +70,11 @@ def add_SendFileServiceServicer_to_server(servicer, server):
                     servicer.SendFile,
                     request_deserializer=server__services__pb2.SendFileRequestBody.FromString,
                     response_serializer=server__services__pb2.SendFileResponseBody.SerializeToString,
+            ),
+            'SendFileChunks': grpc.stream_unary_rpc_method_handler(
+                    servicer.SendFileChunks,
+                    request_deserializer=server__services__pb2.SendFileChunksRequest.FromString,
+                    response_serializer=server__services__pb2.SendFileChunksResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -89,6 +105,33 @@ class SendFileService(object):
             '/server_services.SendFileService/SendFile',
             server__services__pb2.SendFileRequestBody.SerializeToString,
             server__services__pb2.SendFileResponseBody.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SendFileChunks(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(
+            request_iterator,
+            target,
+            '/server_services.SendFileService/SendFileChunks',
+            server__services__pb2.SendFileChunksRequest.SerializeToString,
+            server__services__pb2.SendFileChunksResponse.FromString,
             options,
             channel_credentials,
             insecure,

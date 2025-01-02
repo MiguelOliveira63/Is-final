@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # gRPC Server
   grpc-server:
     build: ./grpc-server
     container_name: grpc-server
@@ -17,9 +18,14 @@ services:
       - DBPASSWORD=mypassword
       - DBHOST=db
       - DBPORT=5432
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=user
+      - RABBITMQ_PW=password
     depends_on:
       - db
 
+  # REST API Server
   rest-api-server:
     build: ./rest_api_server
     container_name: rest_api_server
@@ -37,6 +43,39 @@ services:
       - db
       - grpc-server
 
+  # RabbitMQ Server
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # Default RabbitMQ port
+      - "15672:15672" # RabbitMQ Management Console
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+  # Worker Service (for processing CSV data)
+  worker:
+    build: ./worker-rabbit-csv
+    container_name: worker
+    ports:
+      - "8003:8003"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=user
+      - RABBITMQ_PW=password
+      - DBNAME=mydatabase
+      - DBUSERNAME=myuser
+      - DBPASSWORD=mypassword
+      - DBHOST=db
+      - DBPORT=5432
+    depends_on:
+      - rabbitmq
+      - db
+      - grpc-server
+
+  # PostgreSQL Database
   db:
     image: postgres:latest
     container_name: postgres-db
@@ -45,10 +84,11 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydatabase
     ports:
-      - "5433:5432"
+      - "5433:5432"   # Map PostgreSQL port
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+# Volumes for persistent storage
 volumes:
   grpc-server:
   pgdata:
