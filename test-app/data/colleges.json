@@ -1,0 +1,16 @@
+[
+  {
+    "id": "col-101",
+    "name": "San Diego",
+    "location": "9500 Gilman Drive, San Diego, CA 92106",
+    "rating": 4.5
+  },
+
+  {
+    "id": "col-102",
+    "name": "IPVC",
+    "location": "9500 Gilman Drive, San Diego, CA 92106",
+    "rating": 5
+  }
+
+]

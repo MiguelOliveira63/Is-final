@@ -43,6 +43,16 @@ services:
       - db
       - grpc-server
 
+  # GraphQL Server
+  graphql-server:
+    build: ./test-app/graphql/graphql 
+    container_name: graphql-server
+    ports:
+      - "9000:9000" 
+    depends_on:
+      - db
+    command: ["python", "app.py"]
+
   # RabbitMQ Server
   rabbitmq:
     image: rabbitmq:3.9-management

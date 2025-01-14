@@ -2,7 +2,6 @@ from concurrent import futures
 import os
 import grpc
 import logging
-import pika
 import pg8000
 import server_services_pb2_grpc
 import server_services_pb2

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "S1001",
+    "firstName": "Miguel",
+    "lastName": "Fernandez",
+    "email": "miguel.fernandez@ua.pt",
+    "password": "123456",
+    "collegeId": "col-102"
+  },
+  {
+    "id": "S1002",
+    "firstName": "Joao",
+    "lastName": "Afonso",
+    "email": "joao.alfonso@ua.pt",
+    "password": "123456",
+    "collegeId": "col-101"
+  },
+  {
+    "id": "S1003",
+    "firstName": "Silvia",
+    "lastName": "Silva",
+    "email": "silvia.silva@ua.pt",
+    "password": "123456",
+    "collegeId": "col-101"
+  },
+  {
+    "id": "HJj1-dhUkl",
+    "collegeId": "ipvc-ei-24576",
+    "firstName": "Miguel",
+    "lastName": "Fernandez"
+  }
+]
